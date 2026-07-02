@@ -5,7 +5,6 @@ CREATE TABLE CLIENTES (
     DNI VARCHAR2(20) NOT NULL UNIQUE,
     TELEFONO VARCHAR2(20) NOT NULL,
     EMAIL VARCHAR2(100) NOT NULL UNIQUE,
-    FECHA_REGISTRO DATE DEFAULT SYSDATE NOT NULL
 );
 
 CREATE TABLE CATEGORIAS_VEHICULO (
@@ -49,6 +48,16 @@ CREATE TABLE VEHICULOS (
                 'DISPONIBLE',
                 'ALQUILADO',
                 'MANTENIMIENTO'
+            )
+        ),
+
+    CONSTRAINT CK_VEHICULOS_COMBUSTIBLE
+        CHECK (
+            COMBUSTIBLE IN (
+                'GASOLINA',
+                'DIESEL',
+                'HIBRIDO',
+                'AUTOMATICO'
             )
         )
 );
