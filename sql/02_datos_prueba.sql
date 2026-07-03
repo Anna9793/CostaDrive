@@ -111,13 +111,11 @@ VALUES (
 PROMPT ===== MANTENIMIENTOS =====
 
 INSERT INTO MANTENIMIENTOS (
-    ID_MANTENIMIENTO,
     ID_VEHICULO,
     DESCRIPCION,
     COSTE
 )
 VALUES (
-    1,
     1,
     'Cambio de aceite',
     120
@@ -125,7 +123,6 @@ VALUES (
 
 PROMPT ===== MANTENIMIENTOS =====
 INSERT INTO INCIDENCIAS (
-    ID_INCIDENCIA,
     ID_RESERVA,
     DESCRIPCION,
     COSTE,
@@ -133,9 +130,8 @@ INSERT INTO INCIDENCIAS (
 )
 VALUES (
     1,
-    1,
     'Arañazo en puerta trasera',
-    250,
+    150,
     'CERRADA'
 );
 
