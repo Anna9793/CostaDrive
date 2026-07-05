@@ -1,6 +1,5 @@
 CREATE OR REPLACE PROCEDURE GENERAR_FACTURA (
-    p_id_reserva IN NUMBER,
-    p_metodo_pago IN VARCHAR2
+    p_id_reserva IN NUMBER
 ) IS 
     v_precio_dia NUMBER;
     v_dias NUMBER;
@@ -8,7 +7,7 @@ CREATE OR REPLACE PROCEDURE GENERAR_FACTURA (
 
 BEGIN
 
-    SELECT(r.FECHA_FIN - r.FECHA_INICIO), v_precio_dia
+    SELECT(r.FECHA_FIN - r.FECHA_INICIO), v.precio_dia
     INTO v_dias, v_precio_dia
     FROM reservas R
     JOIN VEHICULOS v 

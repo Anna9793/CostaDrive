@@ -96,15 +96,13 @@ VALUES (
 PROMPT ===== PAGOS =====
 
 INSERT INTO PAGOS (
-    ID_PAGO,
     ID_FACTURA,
     IMPORTE,
     METODO_PAGO
 )
 VALUES (
     1,
-    1,
-    175,
+    120,
     'TARJETA'
 );
 
