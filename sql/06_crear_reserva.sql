@@ -10,6 +10,10 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20002, 'La fecha de fin debe ser posterior a la de inicio.');
     END IF;
 
+    IF NOT ESTA_DISPONIBLE(p_id_vehiculo, p_fecha_inicio, p_fecha_fin) THEN
+        RAISE_APPLICATION_ERROR(-20003, '¡El coche ya está reservado en estas fechas!');
+    END IF;
+
     INSERT INTO RESERVAS(
         ID_CLIENTE,
         ID_VEHICULO,
