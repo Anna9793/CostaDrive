@@ -187,6 +187,8 @@ CREATE TABLE INCIDENCIAS (
 
     COSTE NUMBER(10,2) DEFAULT 0 NOT NULL,
 
+    DESTINO_COSTE VARCHAR(20) DEFAULT 'EMPRESA',
+
     ESTADO_INCIDENCIA VARCHAR2(20)
         DEFAULT 'ABIERTA' NOT NULL,
 
@@ -197,12 +199,20 @@ CREATE TABLE INCIDENCIAS (
     CONSTRAINT CK_INCIDENCIA_COSTE
         CHECK (COSTE >= 0),
 
+    CONSTRAINT CK_DESTINO_COSTE
+    CHECK (DESTINO_COSTE IN (
+        'EMPRESA',
+        'CLIENTE',
+        'SEGURO'
+        )
+    ),
+
     CONSTRAINT CK_INCIDENCIA_ESTADO
         CHECK (
             ESTADO_INCIDENCIA IN (
                 'ABIERTA',
                 'EN_PROCESO',
-                'CERRADA'
+                'RESUELTA'
             )
         )
 );
