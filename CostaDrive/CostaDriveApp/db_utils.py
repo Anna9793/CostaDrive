@@ -16,3 +16,9 @@ def generar_factura_db(id_reserva):
     params = [id_reserva]
 
     _ejecutar_proc('GENERAR_FACTURA', params)
+    
+def registrar_pago_db(id_factura, metodo_pago, importe):
+
+    params = [id_factura, metodo_pago, importe]
+
+    _ejecutar_proc('REGISTRAR_PAGO', params)

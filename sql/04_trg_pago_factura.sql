@@ -5,5 +5,9 @@ BEGIN
     UPDATE FACTURAS
     SET ESTADO_PAGO = 'PAGADA'
     WHERE ID_FACTURA = :NEW.ID_FACTURA;
+
+    IF SQL%NOTFOUND THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Factura no encontrada para el pago realizado.');
+    END IF;
 END;
 /
