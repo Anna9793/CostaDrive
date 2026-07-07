@@ -20,7 +20,6 @@ BEGIN
     VALUES
     (p_id_reserva, SYSDATE, v_importe_total, 'PENDIENTE');
 
-    COMMIT;
 END;
 /
 
