@@ -10,7 +10,9 @@ class CategoriasVehiculo(models.Model):
     class Meta:
         managed = False
         db_table = 'categorias_vehiculo'
+        verbose_name_plural = 'CategoriasVehiculo'
         app_label = 'CostaDriveApp'
+        
 
 
 class Clientes(models.Model):
@@ -24,6 +26,7 @@ class Clientes(models.Model):
     class Meta:
         managed = False
         db_table = 'clientes'
+        verbose_name_plural = 'Clientes'
         app_label = 'CostaDriveApp'
 
 
@@ -37,6 +40,7 @@ class Facturas(models.Model):
     class Meta:
         managed = False
         db_table = 'facturas'
+        verbose_name_plural = 'Facturas'
         app_label = 'CostaDriveApp'
 
 
@@ -52,6 +56,7 @@ class Incidencias(models.Model):
     class Meta:
         managed = False
         db_table = 'incidencias'
+        verbose_name_plural = 'Incidencias'
         app_label = 'CostaDriveApp'
 
 
@@ -65,6 +70,7 @@ class Mantenimientos(models.Model):
     class Meta:
         managed = False
         db_table = 'mantenimientos'
+        verbose_name_plural = 'Mantenimientos'
         app_label = 'CostaDriveApp'
 
 
@@ -78,6 +84,7 @@ class Pagos(models.Model):
     class Meta:
         managed = False
         db_table = 'pagos'
+        verbose_name_plural = 'Pagos'
         app_label = 'CostaDriveApp'
 
 class Reservas(models.Model):
@@ -92,6 +99,7 @@ class Reservas(models.Model):
     class Meta:
         managed = False
         db_table = 'reservas'
+        verbose_name_plural = 'Reservas'
         app_label = 'CostaDriveApp'
 
 
@@ -109,4 +117,5 @@ class Vehiculos(models.Model):
     class Meta:
         managed = False
         db_table = 'vehiculos'
+        verbose_name_plural = 'Vehiculos'
         app_label = 'CostaDriveApp'
