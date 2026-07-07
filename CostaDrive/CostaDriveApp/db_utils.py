@@ -1,8 +1,18 @@
 from django.db import connection
 
+def _ejecutar_proc(nombre_proc, params):
+
+    with connection.cursor() as cursor:
+        cursor.callproc(nombre_proc, params)
+
 def crear_reserva_db(id_cliente, id_vehiculo, fecha_inicio, fecha_fin):
 
-    lista_parametros = [id_cliente, id_vehiculo, fecha_inicio, fecha_fin]
+    params = [id_cliente, id_vehiculo, fecha_inicio, fecha_fin]
     
-    with connection.cursor() as cursor:
-        cursor.callproc('CREAR_RESERVA', lista_parametros)
+    _ejecutar_proc('CREAR_RESERVA', params)
+
+def generar_factura_db(id_reserva):
+
+    params = [id_reserva]
+
+    _ejecutar_proc('GENERAR_FACTURA', params)

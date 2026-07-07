@@ -19,7 +19,14 @@ def procesar_reserva(request):
                 return HttpResponse(f"Error en Oracle: {e}")
 
     else:
-        return ReservaForm()
+        form = ReservaForm()
     
-    return render(request, 'reserva_form-html', {'form': form}) 
+    return render(request, 'reserva_form.html', {'form': form}) 
+
+def formalizar_reserva(request, id_reserva):
+    try:
+        generar_factura_db(id_reserva)
+        return HttpResponse("Reserva creada y factura generada con éxito.")
+    except Exception as e:
+        return HttpResponse(f"Error: {e}")
 
