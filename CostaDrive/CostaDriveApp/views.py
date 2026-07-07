@@ -11,4 +11,6 @@ def procesar_reserva(request):
         except Exception as e:
             return HttpResponse(f"Error al crear reserva: {e}")
 
+    else:
+        return HttpResponse("Este es el formulario. Proximamente verás aquí un HTML")
 
