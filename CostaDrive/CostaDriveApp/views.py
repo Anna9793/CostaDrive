@@ -1,16 +1,25 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from .db_utils import crear_reserva_db
-from django.http import HttpResponse
+from .forms import ReservaForm
+
 
 def procesar_reserva(request):
     if request.method == 'POST':
-
-        try:
-            crear_reserva_db(1, 6, '2026-08-01', '2026-08-08')
-            return HttpResponse("¡Reserva creada con éxito en Oracle!")
-        except Exception as e:
-            return HttpResponse(f"Error al crear reserva: {e}")
+        form = ReservaForm(request.POST)
+        if form.is_valid():
+            try:
+                crear_reserva_db(
+                    form.cleaned_data['id_cliente'],
+                    form.cleaned_data['id_vehiculo'],
+                    form.cleaned_data['fecha_inicio'],
+                    form.cleaned_data['fecha_fin']
+                )
+                return HttpResponse("¡Reserva creada con éxito!")
+            except Exception as e:
+                return HttpResponse(f"Error en Oracle: {e}")
 
     else:
-        return HttpResponse("Este es el formulario. Proximamente verás aquí un HTML")
+        return ReservaForm()
+    
+    return render(request, 'reserva_form-html', {'form': form}) 
 
