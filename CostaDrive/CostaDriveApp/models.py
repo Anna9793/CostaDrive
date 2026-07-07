@@ -10,6 +10,7 @@ class CategoriasVehiculo(models.Model):
     class Meta:
         managed = False
         db_table = 'categorias_vehiculo'
+        app_label = 'CostaDriveApp'
 
 
 class Clientes(models.Model):
@@ -23,6 +24,7 @@ class Clientes(models.Model):
     class Meta:
         managed = False
         db_table = 'clientes'
+        app_label = 'CostaDriveApp'
 
 
 class Facturas(models.Model):
@@ -35,6 +37,7 @@ class Facturas(models.Model):
     class Meta:
         managed = False
         db_table = 'facturas'
+        app_label = 'CostaDriveApp'
 
 
 class Incidencias(models.Model):
@@ -49,6 +52,7 @@ class Incidencias(models.Model):
     class Meta:
         managed = False
         db_table = 'incidencias'
+        app_label = 'CostaDriveApp'
 
 
 class Mantenimientos(models.Model):
@@ -61,6 +65,7 @@ class Mantenimientos(models.Model):
     class Meta:
         managed = False
         db_table = 'mantenimientos'
+        app_label = 'CostaDriveApp'
 
 
 class Pagos(models.Model):
@@ -73,6 +78,7 @@ class Pagos(models.Model):
     class Meta:
         managed = False
         db_table = 'pagos'
+        app_label = 'CostaDriveApp'
 
 class Reservas(models.Model):
     id_reserva = models.FloatField(primary_key=True)
@@ -86,6 +92,7 @@ class Reservas(models.Model):
     class Meta:
         managed = False
         db_table = 'reservas'
+        app_label = 'CostaDriveApp'
 
 
 class Vehiculos(models.Model):
@@ -102,3 +109,4 @@ class Vehiculos(models.Model):
     class Meta:
         managed = False
         db_table = 'vehiculos'
+        app_label = 'CostaDriveApp'
