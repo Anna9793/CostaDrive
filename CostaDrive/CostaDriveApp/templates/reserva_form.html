@@ -1,6 +1,12 @@
-<h2>Nueva Reserva</h2>
-<form method="post">
+{% extends 'base.html' %} 
+ {% block content %}
+
+    <h2>Nueva Reserva</h2>
+    <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Reservar</button>
-</form>
+    </form>
+
+    <a href="{% url 'dashboard' %}">Volver al Dashboard</a>
+{% endblock %}

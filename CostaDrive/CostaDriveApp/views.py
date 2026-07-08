@@ -1,27 +1,40 @@
 from django.shortcuts import render, HttpResponse
-from .db_utils import crear_reserva_db
+from .db_utils import (crear_reserva_db,
+                      obtener_reservas_db,
+                      obtener_reservas_cliente_db,
+                      contar_reservas_pendientes_db)
 from .forms import ReservaForm
 
+def dashboard_reservas(request):
+    cliente_id = request.GET.get("cliente")
+    contexto = {
+        'reservas': obtener_reservas_db(cliente_id),
+        'pendientes': contar_reservas_pendientes_db(),
+    }
+    return render(request, 'dashboard.html', contexto)
 
-def procesar_reserva(request):
+def crear_reserva(request):
     if request.method == 'POST':
         form = ReservaForm(request.POST)
         if form.is_valid():
-            try:
                 crear_reserva_db(
                     form.cleaned_data['id_cliente'],
                     form.cleaned_data['id_vehiculo'],
                     form.cleaned_data['fecha_inicio'],
                     form.cleaned_data['fecha_fin']
                 )
-                return HttpResponse("¡Reserva creada con éxito!")
-            except Exception as e:
-                return HttpResponse(f"Error en Oracle: {e}")
+                return redirect('dashboard')
 
     else:
         form = ReservaForm()
+
+    return render(request, 'reserva_form.html', {'form': form})
+
+def cancelar_reserva(request, id_reserva):
     
-    return render(request, 'reserva_form.html', {'form': form}) 
+
+def modificar_reserva(request, id_reserva,)
+
 
 def formalizar_reserva(request, id_reserva):
     try:
