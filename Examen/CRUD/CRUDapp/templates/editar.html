@@ -1,0 +1,38 @@
+<h1>Editar departamento</h1>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    <p>
+        DeptNo:
+        <input
+            type="text"
+            value="{{ departamento.0 }}"
+            readonly
+        >
+    </p>
+
+    <p>
+        Nombre:
+        <input
+            type="text"
+            name="nombre"
+            value="{{ departamento.1 }}"
+        >
+    </p>
+
+    <p>
+        Localización:
+        <input
+            type="text"
+            name="loc"
+            value="{{ departamento.2 }}"
+        >
+    </p>
+
+    <button>
+        Editar
+    </button>
+
+</form>

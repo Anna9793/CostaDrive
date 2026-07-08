@@ -1,0 +1,36 @@
+<h1>Departamentos</h1>
+
+<table border="1">
+
+    <tr>
+        <th>DeptNo</th>
+        <th>Nombre</th>
+        <th>Localización</th>
+        <th>Acciones</th>
+    </tr>
+
+    {% for d in departamentos %}
+    <tr>
+
+        <td>{{ d.0 }}</td>
+        <td>{{ d.1 }}</td>
+        <td>{{ d.2 }}</td>
+
+        <td>
+            <a href="{% url 'eliminar' d.0 %}">
+                Borrar
+            </a>
+
+            <a href="{% url 'editar' d.0 %}">
+                Editar
+            </a>
+        </td>
+
+    </tr>
+    {% endfor %}
+
+</table>
+
+<a href="{% url 'nuevo' %}">
+    Nuevo
+</a>

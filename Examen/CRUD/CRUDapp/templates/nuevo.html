@@ -1,0 +1,26 @@
+<h1>Nuevo departamento</h1>
+
+<form method="post">
+
+    {% csrf_token %}
+
+    <p>
+        DeptNo:
+        <input type="number" name="deptno">
+    </p>
+
+    <p>
+        Nombre:
+        <input type="text" name="nombre">
+    </p>
+
+    <p>
+        Localización:
+        <input type="text" name="loc">
+    </p>
+
+    <button>
+        Insertar
+    </button>
+
+</form>
