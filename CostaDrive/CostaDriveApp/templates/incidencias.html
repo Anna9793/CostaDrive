@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Incidencias y Mantenimientos - CostaDrive{% endblock %}
+
+{% block content %}
+<header class="top-header">
+    <div>
+        <h1>Incidencias y Mantenimientos</h1>
+        <p class="subtitle">Gestión de siniestros, averías y reparaciones mecánicas de los vehículos</p>
+    </div>
+</header>
+
+<div class="split-layout">
+    <!-- Log Incident Form -->
+    <div class="panel" style="height: fit-content;">
+        <h2 class="panel-title" style="margin-bottom: 1.5rem;">🚨 Registrar Nueva Incidencia</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--danger); font-size: 0.825rem; margin-top: 0.25rem;">
+                            {{ field.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-error" style="margin-top: 1rem;">
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+                ⚠️ Registrar Incidencia
+            </button>
+        </form>
+    </div>
+
+    <!-- Active/Resolved Incidents List -->
+    <div class="panel">
+        <h2 class="panel-title" style="margin-bottom: 1.5rem;">Listado de Incidencias</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% for inc in incidencias %}
+            <!-- row format: (id_incidencia, id_reserva, fecha_incidencia, descripcion, coste, destino_coste, estado_incidencia, cliente_name, vehiculo_name) -->
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <div>
+                        <strong style="color: var(--text-main);">Incidencia #{{ inc.0|floatformat:"0" }}</strong>
+                        <span class="text-muted" style="font-size: 0.75rem; display: block;">{{ inc.2|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    <div>
+                        {% if inc.6 == 'ABIERTA' %}
+                            <span class="badge danger">Abierta</span>
+                        {% elif inc.6 == 'EN_PROCESO' %}
+                            <span class="badge warning">En Proceso</span>
+                        {% else %}
+                            <span class="badge success">Resuelta</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <p style="font-size: 0.875rem; margin-bottom: 0.75rem; color: var(--text-muted);">
+                    {{ inc.3 }}
+                </p>
+
+                <div style="font-size: 0.825rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; border-top: 1px dashed var(--border-color); padding-top: 0.75rem; margin-bottom: 0.75rem;">
+                    <div><strong>Cliente:</strong> {{ inc.7 }}</div>
+                    <div><strong>Vehículo:</strong> {{ inc.8 }}</div>
+                    <div><strong>Destino del Coste:</strong> <span class="badge info" style="font-size: 0.7rem; padding: 0.1rem 0.5rem;">{{ inc.5 }}</span></div>
+                    <div><strong>Coste:</strong> {{ inc.4 }} €</div>
+                </div>
+
+                {% if inc.6 == 'ABIERTA' and request.user.groups.all.0.name != 'Receptionist' %}
+                <form action="{% url 'resolver_incidencia' inc.0 %}" method="post" style="display: flex; gap: 0.5rem; align-items: center; background: rgba(0, 0, 0, 0.2); padding: 0.5rem; border-radius: 8px;">
+                    {% csrf_token %}
+                    <span style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap;">Coste final (€):</span>
+                    <input type="number" step="0.01" name="coste_final" value="{{ inc.4 }}" class="form-control" style="padding: 0.25rem 0.5rem; font-size: 0.825rem; height: 30px;" required>
+                    <button type="submit" class="btn btn-primary btn-xs" style="height: 30px;">Resolver</button>
+                </form>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="text-muted" style="text-align: center; padding: 2rem;">No hay incidencias registradas.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Maintenance History Section -->
+<div class="panel" style="margin-top: 2rem;">
+    <h2 class="panel-title" style="margin-bottom: 1.5rem;">🛠️ Historial de Mantenimientos Realizados</h2>
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Vehículo</th>
+                    <th>Matrícula</th>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th style="text-align: right;">Coste</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in mantenimientos %}
+                <!-- row format: (id_mantenimiento, id_vehiculo, fecha_mantenimiento, descripcion, coste, vehiculo_name, matricula) -->
+                <tr>
+                    <td><strong>#{{ m.0|floatformat:"0" }}</strong></td>
+                    <td>{{ m.5 }}</td>
+                    <td><code style="background: rgba(255,255,255,0.05); padding: 0.2rem 0.4rem; border-radius: 4px;">{{ m.6 }}</code></td>
+                    <td>{{ m.2|date:"d/m/Y H:i" }}</td>
+                    <td>{{ m.3 }}</td>
+                    <td style="text-align: right; color: var(--danger); font-weight: 600;">-{{ m.4 }} €</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        No hay registros de mantenimientos.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

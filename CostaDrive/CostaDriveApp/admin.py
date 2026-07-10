@@ -23,6 +23,6 @@ class VehiculosAdmin(admin.ModelAdmin):
     search_fields = ('matricula', 'marca', 'modelo')
 
 @admin.register(Clientes)
-class ClientesAdemin(admin.ModelAdmin):
+class ClientesAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'apellidos', 'dni', 'telefono')
     search_fields = ('nombre', 'apellidos', 'dni', 'email')

@@ -1,17 +1,92 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>CostaDrive Management</title>
-    <style>
-        nav { background: #333; color: white; padding: 1rem; }
-        .main-container { padding: 20px; }
-        .stats-box { background: #f4f4f4; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CostaDrive Management{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <nav><h1>CostaDrive System</h1></nav>
-    <div class="main-container">
-        {% block content %}{% endblock %}
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span>🚗</span> CostaDrive
+            </div>
+            <ul class="nav-links">
+                {% if request.user.groups.all.0.name == 'Client' %}
+                <!-- Client Links -->
+                <li class="{% if request.resolver_match.url_name == 'client_dashboard' or request.resolver_match.url_name == 'client_pagar_factura' %}active{% endif %}">
+                    <a href="{% url 'client_dashboard' %}">📊 Mis Alquileres</a>
+                </li>
+                <li class="{% if request.resolver_match.url_name == 'client_crear_reserva' %}active{% endif %}">
+                    <a href="{% url 'client_crear_reserva' %}">➕ Nueva Reserva</a>
+                </li>
+                {% else %}
+                <!-- Staff Links -->
+                {% if request.user.groups.all.0.name == 'Manager' or request.user.groups.all.0.name == 'Receptionist' or request.user.is_superuser %}
+                <li class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <a href="{% url 'dashboard' %}">📊 Dashboard</a>
+                </li>
+                <li class="{% if request.resolver_match.url_name == 'listar_clientes' or request.resolver_match.url_name == 'crear_cliente' %}active{% endif %}">
+                    <a href="{% url 'listar_clientes' %}">👥 Clientes</a>
+                </li>
+                {% endif %}
+
+                <li class="{% if request.resolver_match.url_name == 'listar_vehiculos' or request.resolver_match.url_name == 'registrar_mantenimiento' %}active{% endif %}">
+                    <a href="{% url 'listar_vehiculos' %}">🚙 Flota de Vehículos</a>
+                </li>
+
+                {% if request.user.groups.all.0.name == 'Manager' or request.user.groups.all.0.name == 'Receptionist' or request.user.is_superuser %}
+                <li class="{% if request.resolver_match.url_name == 'listar_facturas' or request.resolver_match.url_name == 'pagar_factura' %}active{% endif %}">
+                    <a href="{% url 'listar_facturas' %}">💳 Facturas y Pagos</a>
+                </li>
+                {% endif %}
+
+                <li class="{% if request.resolver_match.url_name == 'gestionar_incidencias' %}active{% endif %}">
+                    <a href="{% url 'gestionar_incidencias' %}">⚠️ Incidencias y Mantenimientos</a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <!-- User Profile Box -->
+            {% if request.user.is_authenticated %}
+            <div class="user-profile-box" style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.75rem;">
+                <div>
+                    <span class="text-muted" style="font-size: 0.75rem; display: block;">Identificado como:</span>
+                    <strong style="font-size: 0.95rem; display: block; color: var(--text-main);">{{ request.user.first_name }} {{ request.user.last_name }}</strong>
+                    <span class="badge {% if request.user.groups.all.0.name == 'Manager' %}success{% elif request.user.groups.all.0.name == 'Receptionist' %}info{% elif request.user.groups.all.0.name == 'Client' %}success{% else %}warning{% endif %}" style="font-size: 0.65rem; padding: 0.15rem 0.5rem; margin-top: 0.25rem; {% if request.user.groups.all.0.name == 'Client' %}background: rgba(16, 185, 129, 0.15); color: var(--success); border-color: rgba(16, 185, 129, 0.25);{% endif %}">
+                        {{ request.user.groups.all.0.name|default:"Superuser" }}
+                    </span>
+                </div>
+                <form action="{% url 'logout' %}" method="post" style="display: block; width: 100%;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary btn-xs" style="width: 100%; justify-content: center; color: var(--danger); border-color: rgba(239, 68, 68, 0.2); cursor: pointer;">
+                        🚪 Cerrar Sesión
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            <!-- Global Messages Notification Center -->
+            {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    {% if message.tags == 'error' %}❌{% else %}✨{% endif %} {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
     </div>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

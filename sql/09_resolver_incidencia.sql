@@ -16,13 +16,7 @@ BEGIN
         COSTE = p_coste_final
     WHERE ID_INCIDENCIA = p_id_incidencia;
     
-    IF v_destino = 'CLIENTE' THEN
-        UPDATE FACTURAS
-        SET IMPORTE_TOTAL = IMPORTE_TOTAL + p_coste_final,
-            ESTADO_PAGO = 'PENDIENTE'
-        WHERE ID_RESERVA = v_id_reserva;
-
-    ELSIF v_destino = 'EMPRESA' THEN
+    IF v_destino = 'EMPRESA' THEN
         INSERT INTO MANTENIMIENTOS(ID_VEHICULO, DESCRIPCION, COSTE)
         SELECT r.ID_VEHICULO, 'Incidencia resuelta (ID: '|| i.id_incidencia ||'): '|| i.DESCRIPCION,
         i.COSTE

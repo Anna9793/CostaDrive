@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Nuevo Cliente - CostaDrive{% endblock %}
+
+{% block content %}
+<header class="top-header">
+    <div>
+        <h1>Registrar Nuevo Cliente</h1>
+        <p class="subtitle">Dar de alta un nuevo cliente en el sistema para realizar reservas</p>
+    </div>
+    <a href="{% url 'crear_reserva' %}" class="btn btn-secondary">🔙 Volver a la Reserva</a>
+</header>
+
+<div class="panel" style="max-width: 600px; margin: 0 auto;">
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div style="color: var(--danger); font-size: 0.825rem; margin-top: 0.25rem;">
+                        {{ field.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-error" style="margin-top: 1rem;">
+                {{ form.non_field_errors.0 }}
+            </div>
+        {% endif %}
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
+                👤 Guardar Cliente
+            </button>
+            <a href="{% url 'crear_reserva' %}" class="btn btn-secondary" style="flex: 1; text-align: center; justify-content: center;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% block extra_js %}{% endblock %}
+{% endblock %}

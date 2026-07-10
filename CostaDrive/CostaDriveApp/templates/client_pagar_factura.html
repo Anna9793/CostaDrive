@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Pagar Factura - CostaDrive{% endblock %}
+
+{% block content %}
+<header class="top-header">
+    <div>
+        <h1>Pasarela de Pago Online</h1>
+        <p class="subtitle">Proceder al cobro seguro de la factura asociada a tu reserva.</p>
+    </div>
+    <a href="{% url 'client_dashboard' %}" class="btn btn-secondary">🔙 Volver a mi Cuenta</a>
+</header>
+
+<div class="split-layout">
+    <!-- Invoice Summary -->
+    <div class="panel" style="height: fit-content;">
+        <h2 class="panel-title" style="margin-bottom: 1.5rem;">📄 Resumen del Alquiler</h2>
+        
+        <!-- Factura details -->
+        <!-- factura layout: (id_factura, id_reserva, fecha_factura, importe_total, estado_pago, cliente_name, vehiculo_name) -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.75rem;">
+                <span class="text-muted">Factura ID:</span>
+                <span style="font-weight: 600; color: var(--text-main);">#{{ factura.0|floatformat:"0" }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.75rem;">
+                <span class="text-muted">Reserva ID:</span>
+                <span style="font-weight: 600; color: var(--text-main);">#{{ factura.1|floatformat:"0" }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.75rem;">
+                <span class="text-muted">Vehículo:</span>
+                <span style="font-weight: 600; color: var(--text-main);">{{ factura.6 }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.75rem;">
+                <span class="text-muted">Fecha de Emisión:</span>
+                <span>{{ factura.2|date:"d/m/Y" }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-top: 0.5rem;">
+                <span style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">Importe Total:</span>
+                <span style="font-size: 1.25rem; font-weight: 700; color: var(--secondary);">{{ factura.3 }} €</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credit Card details & Form -->
+    <div class="panel">
+        <h2 class="panel-title" style="margin-bottom: 1.5rem;">💳 Detalles del Pago</h2>
+        
+        <form method="post" novalidate style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.metodo_pago.id_for_label }}">{{ form.metodo_pago.label }}</label>
+                {{ form.metodo_pago }}
+                {% if form.metodo_pago.errors %}
+                    <div style="color: var(--danger); font-size: 0.825rem; margin-top: 0.25rem;">
+                        {{ form.metodo_pago.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Virtual Credit Card details to simulate premium gateway -->
+            <div id="credit-card-fields">
+                <div class="form-group">
+                    <label>Número de Tarjeta</label>
+                    <input type="text" placeholder="•••• •••• •••• ••••" class="form-control" style="background: rgba(15, 23, 42, 0.8) !important;" maxlength="19">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Fecha Caducidad</label>
+                        <input type="text" placeholder="MM/AA" class="form-control" style="background: rgba(15, 23, 42, 0.8) !important;" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label>CVC / CVV</label>
+                        <input type="text" placeholder="•••" class="form-control" style="background: rgba(15, 23, 42, 0.8) !important;" maxlength="3">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden field for amount -->
+            <div style="display: none;">
+                {{ form.importe }}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; font-size: 1rem; padding: 0.75rem; margin-top: 1rem; background: var(--secondary); border-color: var(--secondary);">
+                🔒 Realizar Pago Seguro ({{ factura.3 }} €)
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const metodoSelect = document.getElementById('{{ form.metodo_pago.id_for_label }}');
+        const cardFields = document.getElementById('credit-card-fields');
+        
+        function toggleCardFields() {
+            if (metodoSelect.value === 'TARJETA') {
+                cardFields.style.display = 'block';
+            } else {
+                cardFields.style.display = 'none';
+            }
+        }
+        
+        metodoSelect.addEventListener('change', toggleCardFields);
+        toggleCardFields(); // Init state
+    });
+</script>
+{% endblock %}

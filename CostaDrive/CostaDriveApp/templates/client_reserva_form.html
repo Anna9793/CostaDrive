@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    {% if editing %}Editar Reserva #{{ reserva.0|floatformat:"0" }}{% else %}Nueva Reserva{% endif %} - CostaDrive
-{% endblock %}
+{% block title %}Reservar Vehículo - CostaDrive{% endblock %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -44,31 +42,20 @@
 {% block content %}
 <header class="top-header">
     <div>
-        <h1>{% if editing %}Editar Reserva #{{ reserva.0|floatformat:"0" }}{% else %}Crear Nueva Reserva{% endif %}</h1>
-        <p class="subtitle">
-            {% if editing %}
-                Modificar fechas para la reserva de {{ reserva.7 }} (Vehículo: {{ reserva.8 }})
-            {% else %}
-                Asignar un cliente y vehículo para un nuevo alquiler de la flota
-            {% endif %}
-        </p>
+        <h1>Solicitar Reserva de Vehículo</h1>
+        <p class="subtitle">Selecciona un vehículo disponible de la flota e introduce las fechas del alquiler.</p>
     </div>
-    <a href="{% url 'dashboard' %}" class="btn btn-secondary">🔙 Volver al Dashboard</a>
+    <a href="{% url 'client_dashboard' %}" class="btn btn-secondary">🔙 Volver a mi Cuenta</a>
 </header>
 
 <div class="panel" style="max-width: 600px; margin: 0 auto;">
     <form method="post" novalidate>
         {% csrf_token %}
         
-        <!-- Render custom form fields with styling -->
+        <!-- Render form fields -->
         {% for field in form %}
             <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <label for="{{ field.id_for_label }}" style="margin-bottom: 0;">{{ field.label }}</label>
-                    {% if field.name == 'cliente' and not editing %}
-                        <a href="{% url 'crear_cliente' %}" style="font-size: 0.825rem; color: var(--secondary); text-decoration: none;">➕ Nuevo Cliente</a>
-                    {% endif %}
-                </div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field }}
                 {% if field.errors %}
                     <div style="color: var(--danger); font-size: 0.825rem; margin-top: 0.25rem;">
@@ -87,9 +74,9 @@
 
         <div style="display: flex; gap: 1rem; margin-top: 2rem;">
             <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
-                {% if editing %}💾 Guardar Cambios{% else %}⚡ Confirmar Reserva{% endif %}
+                ⚡ Confirmar Reserva
             </button>
-            <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="flex: 1; text-align: center; justify-content: center;">
+            <a href="{% url 'client_dashboard' %}" class="btn btn-secondary" style="flex: 1; text-align: center; justify-content: center;">
                 Cancelar
             </a>
         </div>
@@ -103,7 +90,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             flatpickr(".form-control[type='date']", {
                 dateFormat: "Y-m-d",
-                allowInput: true
+                allowInput: true,
+                minDate: "today"
             });
         });
     </script>

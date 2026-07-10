@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Pago Factura #{{ factura.0|floatformat:"0" }} - CostaDrive{% endblock %}
+
+{% block content %}
+<header class="top-header">
+    <div>
+        <h1>Registrar Pago</h1>
+        <p class="subtitle">Completar el cobro de la factura #{{ factura.0|floatformat:"0" }}</p>
+    </div>
+    <a href="{% url 'listar_facturas' %}" class="btn btn-secondary">🔙 Volver a Facturas</a>
+</header>
+
+<div class="split-layout" style="align-items: start;">
+    <!-- Invoice Summary -->
+    <div class="panel">
+        <h2 class="panel-title" style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Detalle de Factura</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+            <div>
+                <span class="text-muted" style="font-size: 0.875rem; display: block;">Cliente</span>
+                <strong style="font-size: 1.125rem;">{{ factura.5 }}</strong>
+            </div>
+            <div>
+                <span class="text-muted" style="font-size: 0.875rem; display: block;">Vehículo Alquilado</span>
+                <strong>{{ factura.6 }}</strong>
+            </div>
+            <div>
+                <span class="text-muted" style="font-size: 0.875rem; display: block;">Fecha de Emisión</span>
+                <span>{{ factura.2|date:"d/m/Y H:i" }}</span>
+            </div>
+            <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); padding: 1rem; border-radius: 12px; margin-top: 1rem;">
+                <span class="text-muted" style="font-size: 0.875rem; display: block; color: var(--primary);">Importe Total a Pagar</span>
+                <strong style="font-size: 2rem; color: var(--text-main);">{{ factura.3 }} €</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Form -->
+    <div class="panel">
+        <h2 class="panel-title" style="margin-bottom: 1.5rem;">Información del Pago</h2>
+        
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: var(--danger); font-size: 0.825rem; margin-top: 0.25rem;">
+                            {{ field.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-error" style="margin-top: 1rem;">
+                    {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; justify-content: center;">
+                    💳 Confirmar Cobro
+                </button>
+                <a href="{% url 'listar_facturas' %}" class="btn btn-secondary" style="flex: 1; text-align: center; justify-content: center;">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -4,6 +4,7 @@ CREATE OR REPLACE PROCEDURE CREAR_RESERVA(
     p_fecha_inicio IN DATE,
     p_fecha_fin IN DATE
 ) IS 
+    v_id_reserva NUMBER;
 BEGIN
 
     IF p_fecha_fin <= p_fecha_inicio THEN
@@ -22,7 +23,6 @@ BEGIN
         FECHA_RESERVA,
         ESTADO_RESERVA
     )
-
     VALUES (
         p_id_cliente,
         p_id_vehiculo,
@@ -30,10 +30,14 @@ BEGIN
         p_fecha_fin,
         SYSDATE,
         'ACTIVA'
-    );
+    )
+    RETURNING ID_RESERVA INTO v_id_reserva;
+
+    -- Generar factura automáticamente
+    GENERAR_FACTURA(v_id_reserva);
 
     COMMIT;
-    DBMS_OUTPUT.PUT_LINE('Reserva creada correctamente para el cliente' || p_id_cliente);
+    DBMS_OUTPUT.PUT_LINE('Reserva creada correctamente para el cliente ' || p_id_cliente || '.');
 END;
 /
 

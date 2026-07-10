@@ -1,27 +1,249 @@
 {% extends 'base.html' %}
 
+{% block title %}Dashboard - CostaDrive{% endblock %}
+
 {% block content %}
-    <div class="stats-box">
-        <h3>Alertas:</h3>
-        <p>Tienes {{ pendientes }} reservas pendientes de pago.</p>
+<header class="top-header">
+    <div>
+        <h1>Dashboard General</h1>
+        <p class="subtitle">Estado operativo de reservas, vehículos y cobros</p>
+    </div>
+    <a href="{% url 'crear_reserva' %}" class="btn btn-primary">➕ Nueva Reserva</a>
+</header>
+
+<!-- Statistics Grid -->
+<div class="stats-grid">
+    <div class="stat-card primary-accent">
+        <span class="label">Total Flota</span>
+        <span class="value">{{ stats.total_vehiculos }}</span>
+        <span class="trend">Vehículos registrados</span>
+    </div>
+    <div class="stat-card success-accent">
+        <span class="label">Disponibles</span>
+        <span class="value">{{ stats.disponibles }}</span>
+        <span class="trend" style="color: #34d399;">Listos para alquilar</span>
+    </div>
+    <div class="stat-card secondary-accent">
+        <span class="label">Reservas Activas</span>
+        <span class="value">{{ stats.reservas_activas }}</span>
+        <span class="trend">Vehículos en uso</span>
+    </div>
+    <div class="stat-card warning-accent">
+        <span class="label">Facturas Pendientes</span>
+        <span class="value">{{ pendientes }}</span>
+        <span class="trend" style="color: #fbbf24;">Requieren pago</span>
+    </div>
+    <div class="stat-card danger-accent">
+        <span class="label">Incidencias Abiertas</span>
+        <span class="value">{{ stats.incidencias_abiertas }}</span>
+        <span class="trend" style="color: #f87171;">Requieren atención</span>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="split-layout" style="margin-top: 2rem; margin-bottom: 2rem; gap: 1.5rem;">
+    <!-- Chart 1: Volume Trend -->
+    <div class="panel" style="flex: 2; margin-bottom: 0;">
+        <h3 class="panel-title" style="margin-bottom: 1rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+            📈 Tendencia Mensual de Reservas
+        </h3>
+        <div style="position: relative; height: 280px; width: 100%;">
+            <canvas id="trendChart"></canvas>
+        </div>
     </div>
     
-    <h2>Tus Reservas</h2>
-    <table>
-        {% for r in reservas %}
-        <tr>
-            <td>ID: {{ r.id_reserva }}</td>
-            <td>Cliente: {{ r.id_cliente }}</td>
-            <td>
-                <a href="{% url 'crear_reserva' %}">+ Crear Nueva Reserva</a>
-                <a href="{% url 'editar_reserva' r.id_reserva %}">Editar Datos</a> |
-                <a href="{% url 'cancelar_reserva' r.id_reserva %}">Cancelar</a> |
-                <a href="{% url 'registrar_pago' r.id_reserva %}">Ir a Pagar</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="3">No hay reservas encontradas.</td></tr>
-        {% endfor %}
-    </table>
+    <!-- Chart 2: Category Distribution -->
+    <div class="panel" style="flex: 1.2; margin-bottom: 0;">
+        <h3 class="panel-title" style="margin-bottom: 1rem; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+            🚗 Reservas por Categoría
+        </h3>
+        <div style="position: relative; height: 280px; width: 100%; display: flex; align-items: center; justify-content: center;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
 
+<!-- Reservations Panel -->
+<div class="panel">
+    <div class="panel-header">
+        <h2 class="panel-title">Listado de Reservas</h2>
+        <form method="get" class="search-form" style="display: flex; gap: 0.5rem;">
+            <input type="number" name="cliente" placeholder="Filtrar por ID Cliente" value="{{ request.GET.cliente|default:'' }}" class="form-control" style="width: 200px; padding: 0.4rem 0.8rem; font-size: 0.875rem;">
+            {% if request.GET.cliente %}
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-xs" style="display: flex; align-items: center;">Limpiar</a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary btn-xs">Filtrar</button>
+        </form>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID Reserva</th>
+                    <th>Cliente (ID)</th>
+                    <th>Vehículo</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>Estado Reserva</th>
+                    <th>Factura (Importe)</th>
+                    <th style="text-align: right;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservas %}
+                <!-- Row layout: (id_reserva, id_cliente, id_vehiculo, fecha_inicio, fecha_fin, fecha_reserva, estado_reserva, nombre_cliente, nombre_vehiculo, id_factura, estado_pago, importe_total) -->
+                <tr>
+                    <td><strong>#{{ r.0|floatformat:"0" }}</strong></td>
+                    <td>{{ r.7 }} <span class="text-muted">(ID: {{ r.1|floatformat:"0" }})</span></td>
+                    <td>{{ r.8 }}</td>
+                    <td>{{ r.3|date:"d/m/Y" }}</td>
+                    <td>{{ r.4|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if r.6 == 'ACTIVA' %}
+                            <span class="badge info">Activa</span>
+                        {% elif r.6 == 'FINALIZADA' %}
+                            <span class="badge success">Finalizada</span>
+                        {% else %}
+                            <span class="badge danger">Cancelada</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if r.9 %}
+                            {% if r.10 == 'PAGADA' %}
+                                <span class="badge success">Pagada ({{ r.11 }}€)</span>
+                            {% elif r.10 == 'PENDIENTE' %}
+                                <span class="badge warning">Pendiente ({{ r.11 }}€)</span>
+                            {% else %}
+                                <span class="badge danger">Anulada</span>
+                            {% endif %}
+                        {% else %}
+                            {% if r.6 == 'CANCELADA' %}
+                                <span class="text-muted">—</span>
+                            {% else %}
+                                <span class="text-muted">Sin facturar</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                            {% if r.6 == 'ACTIVA' %}
+                                <a href="{% url 'editar_reserva' r.0 %}" class="btn btn-secondary btn-xs" title="Editar fechas">✏️ Editar</a>
+                                <a href="{% url 'cancelar_reserva' r.0 %}" class="btn btn-danger btn-xs" onclick="return confirm('¿Seguro que deseas cancelar esta reserva?');" title="Cancelar reserva">❌ Cancelar</a>
+                                {% if not r.9 %}
+                                    <a href="{% url 'formalizar_reserva' r.0 %}" class="btn btn-primary btn-xs" title="Generar factura">📄 Facturar</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        No hay reservas encontradas en el sistema.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // 1. Tendencia Mensual
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    const trendLabels = {{ charts_data.tendencia_labels|safe }};
+    const trendValues = {{ charts_data.tendencia_valores|safe }};
+    
+    // Format YYYY-MM into readable Month names in Spanish
+    const monthNames = {
+        '01': 'Ene', '02': 'Feb', '03': 'Mar', '04': 'Abr', 
+        '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Ago', 
+        '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dic'
+    };
+    const formattedLabels = trendLabels.map(label => {
+        const parts = label.split('-');
+        if (parts.length === 2) {
+            return `${monthNames[parts[1]]} ${parts[0]}`;
+        }
+        return label;
+    });
+
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: formattedLabels,
+            datasets: [{
+                label: 'Volumen de Reservas',
+                data: trendValues,
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#a5b4fc',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8', stepSize: 1 }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' }
+                }
+            }
+        }
+    });
+
+    // 2. Distribución Categorías
+    const catCtx = document.getElementById('categoryChart').getContext('2d');
+    const catLabels = {{ charts_data.cat_labels|safe }};
+    const catValues = {{ charts_data.cat_valores|safe }};
+
+    new Chart(catCtx, {
+        type: 'doughnut',
+        data: {
+            labels: catLabels,
+            datasets: [{
+                data: catValues,
+                backgroundColor: [
+                    '#6366f1', // ECONOMICO
+                    '#10b981', // COMPACTO
+                    '#3b82f6', // SUV
+                    '#fbbf24', // FAMILIAR
+                    '#ec4899'  // PREMIUM
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#f8fafc',
+                        boxWidth: 12,
+                        padding: 15,
+                        font: { size: 11 }
+                    }
+                }
+            },
+            cutout: '65%'
+        }
+    });
+</script>
 {% endblock %}

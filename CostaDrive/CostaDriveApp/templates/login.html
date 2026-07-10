@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - CostaDrive</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+            padding: 2.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .login-logo {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .login-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+        }
+        .form-control {
+            background: rgba(15, 23, 42, 0.8) !important;
+        }
+        .demo-credentials {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .demo-credentials strong {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div>
+            <div class="login-logo">🚗 CostaDrive</div>
+            <div class="login-subtitle">Sistema de Gestión de Alquiler de Vehículos</div>
+        </div>
+
+        <form method="post" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="alert alert-error" style="font-size: 0.825rem; padding: 0.75rem 1rem;">
+                    ❌ Usuario o contraseña incorrectos.
+                </div>
+            {% endif %}
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="id_username">Usuario</label>
+                <input type="text" name="username" id="id_username" class="form-control" placeholder="Ej. manager" required autofocus autocapitalize="none" autocorrect="off" spellcheck="false">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="id_password">Contraseña</label>
+                <input type="password" name="password" id="id_password" class="form-control" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="justify-content: center; padding: 0.75rem; font-size: 1rem; margin-top: 0.5rem;">
+                🔑 Entrar al Sistema
+            </button>
+        </form>
+
+        <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: -0.5rem; margin-bottom: 0.5rem;">
+            ¿Eres un cliente? <a href="{% url 'signup' %}" style="color: var(--primary); text-decoration: none; font-weight: 600;">Registrar cuenta de cliente</a>
+        </div>
+
+        <div class="demo-credentials">
+            <span style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--secondary);">Cuentas del personal disponibles:</span>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.25rem;">
+                <li>• Manager: <strong>manager</strong></li>
+                <li>• Recepcionistas: <strong>receptionist1</strong> / <strong>receptionist2</strong></li>
+                <li>• Mantenimiento: <strong>maintenance1</strong></li>
+                <li style="margin-top: 0.25rem; color: var(--primary);">Contraseña común: <strong>CostaDrive2026!</strong></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

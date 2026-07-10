@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Flota de Vehículos - CostaDrive{% endblock %}
+
+{% block content %}
+<header class="top-header">
+    <div>
+        <h1>Nuestra Flota</h1>
+        <p class="subtitle">Gestión de inventario de vehículos, tarifas y estados</p>
+    </div>
+    {% if request.user.groups.all.0.name != 'Receptionist' %}
+    <a href="{% url 'registrar_mantenimiento' %}" class="btn btn-primary">🛠️ Enviar a Mantenimiento</a>
+    {% endif %}
+</header>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2 class="panel-title">Listado de Vehículos</h2>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Marca y Modelo</th>
+                    <th>Matrícula</th>
+                    <th>Categoría</th>
+                    <th>Año</th>
+                    <th>Combustible</th>
+                    <th>Precio Diario</th>
+                    <th>Estado</th>
+                    <th style="text-align: right;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in vehiculos %}
+                <!-- Row layout: (id_vehiculo, matricula, marca, modelo, anio, combustible, precio_dia, estado_vehiculo, categoria) -->
+                <tr>
+                    <td><strong>#{{ v.0|floatformat:"0" }}</strong></td>
+                    <td>{{ v.2 }} {{ v.3 }}</td>
+                    <td><code style="background: rgba(255,255,255,0.05); padding: 0.2rem 0.4rem; border-radius: 4px;">{{ v.1 }}</code></td>
+                    <td>{{ v.8 }}</td>
+                    <td>{{ v.4 }}</td>
+                    <td>{{ v.5 }}</td>
+                    <td><strong>{{ v.6 }} €</strong></td>
+                    <td>
+                        {% if v.7 == 'DISPONIBLE' %}
+                            <span class="badge success">Disponible</span>
+                        {% elif v.7 == 'ALQUILADO' %}
+                            <span class="badge info">Alquilado</span>
+                        {% else %}
+                            <span class="badge danger">Mantenimiento</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        {% if v.7 == 'MANTENIMIENTO' and request.user.groups.all.0.name != 'Receptionist' %}
+                            <a href="{% url 'liberar_vehiculo' v.0 %}" class="btn btn-secondary btn-xs" style="color: var(--success); border-color: rgba(16, 185, 129, 0.3);">
+                                🔧 Activar Vehículo
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        No hay vehículos registrados en la flota.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

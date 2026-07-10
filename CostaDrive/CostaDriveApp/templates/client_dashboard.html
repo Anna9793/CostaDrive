@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Cuenta - CostaDrive{% endblock %}
+
+{% block content %}
+<header class="top-header">
+    <div>
+        <h1>¡Hola, {{ cliente.nombre }}! 👋</h1>
+        <p class="subtitle">Bienvenido a tu panel de cliente. Gestiona tus alquileres de vehículos, consulta facturas y realiza pagos en línea.</p>
+    </div>
+    <a href="{% url 'client_crear_reserva' %}" class="btn btn-primary">➕ Nueva Reserva</a>
+</header>
+
+<!-- Client Info Widgets -->
+<div style="margin-bottom: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <!-- Weather Widget -->
+    {% if weather_stats.success %}
+    <div class="stat-card" style="border-left: 4px solid var(--primary); display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-radius: 16px;">
+        <div>
+            <span class="label" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">El tiempo en Dénia 📍</span>
+            <span class="value" style="font-size: 1.75rem; font-weight: 700; margin-top: 0.25rem; display: block; color: var(--text-main);">
+                {{ weather_stats.temp }} °C
+            </span>
+            <span class="trend" style="margin-top: 0.25rem; font-size: 0.85rem; color: var(--text-muted);">
+                {{ weather_stats.desc }} | Viento: {{ weather_stats.wind }} km/h
+            </span>
+        </div>
+        <div style="font-size: 3rem; line-height: 1;">
+            {{ weather_stats.emoji }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Fuel Prices Widget -->
+    {% if fuel_stats.success %}
+    <div class="stat-card" style="border-left: 4px solid var(--secondary); display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border-radius: 16px;">
+        <div>
+            <span class="label" style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-muted);">Precios Combustible (Alicante) ⛽</span>
+            <span class="value" style="font-size: 1.15rem; font-weight: 700; margin-top: 0.5rem; display: flex; gap: 1rem; color: var(--text-main); flex-wrap: wrap;">
+                <span>G95: <strong style="color: var(--secondary);">{{ fuel_stats.avg_g95 }} €</strong></span>
+                <span>Diésel: <strong style="color: var(--primary);">{{ fuel_stats.avg_diesel }} €</strong></span>
+            </span>
+            <span class="trend" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                Media prov. de 480+ gasolineras ({{ fuel_stats.fecha }})
+            </span>
+        </div>
+        <div style="font-size: 3rem; line-height: 1; opacity: 0.8;">
+            🛣️
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Promotion/Local Ads Carousel -->
+{% load static %}
+<div class="promo-carousel-container" style="margin-bottom: 2rem; position: relative; border-radius: 16px; overflow: hidden; height: 260px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);">
+    <!-- Slide 1 -->
+    <div class="promo-slide active" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; transition: opacity 0.8s ease; opacity: 1; z-index: 1;">
+        <img src="{% static 'img/restaurant_banner.png' %}" alt="El Portet Restaurante" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 70%, transparent 100%); display: flex; flex-direction: column; gap: 0.25rem;">
+            <span class="badge info" style="align-self: flex-start; margin-bottom: 0.25rem; font-size: 0.7rem;">Gastronomía Local 🥘</span>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin: 0;">Restaurante El Portet Dénia</h3>
+            <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.8); text-shadow: 0 1px 2px rgba(0,0,0,0.5); margin: 0;">Disfruta de la mejor paella tradicional a la orilla del mar. Presenta tu reserva de CostaDrive y obtén un 10% de descuento.</p>
+        </div>
+    </div>
+    <!-- Slide 2 -->
+    <div class="promo-slide" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; transition: opacity 0.8s ease; opacity: 0; z-index: 0;">
+        <img src="{% static 'img/castle_banner.png' %}" alt="Castillo de Denia" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="position: absolute; bottom: 0; right: 0; left: 0; padding: 1.5rem; background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 70%, transparent 100%); display: flex; flex-direction: column; gap: 0.25rem;">
+            <span class="badge success" style="align-self: flex-start; margin-bottom: 0.25rem; font-size: 0.7rem;">Cultura y Turismo 🏰</span>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin: 0;">Castillo de Dénia - Visita Guiada</h3>
+            <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.8); text-shadow: 0 1px 2px rgba(0,0,0,0.5); margin: 0;">Descubre la fortaleza medieval con vistas panorámicas espectaculares del Mediterráneo. Entradas con descuento en recepción.</p>
+        </div>
+    </div>
+    <!-- Slide 3 -->
+    <div class="promo-slide" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; transition: opacity 0.8s ease; opacity: 0; z-index: 0;">
+        <img src="{% static 'img/boat_banner.png' %}" alt="Denia Boat Rental" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="position: absolute; bottom: 0; right: 0; left: 0; padding: 1.5rem; background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 70%, transparent 100%); display: flex; flex-direction: column; gap: 0.25rem;">
+            <span class="badge info" style="align-self: flex-start; margin-bottom: 0.25rem; font-size: 0.7rem; background: rgba(59, 130, 246, 0.15); color: #3b82f6; border-color: rgba(59, 130, 246, 0.25);">Aventura y Mar ⛵</span>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin: 0;">Dénia Boat Rental & Yacht Charter</h3>
+            <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.8); text-shadow: 0 1px 2px rgba(0,0,0,0.5); margin: 0;">Alquila un yate de lujo o motos de agua para explorar los acantilados de las calas de Dénia y Jávea. 15% de descuento para clientes.</p>
+        </div>
+    </div>
+    <!-- Slide 4 -->
+    <div class="promo-slide" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; transition: opacity 0.8s ease; opacity: 0; z-index: 0;">
+        <img src="{% static 'img/hiking_banner.png' %}" alt="Senderismo Montgo" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="position: absolute; bottom: 0; right: 0; left: 0; padding: 1.5rem; background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 70%, transparent 100%); display: flex; flex-direction: column; gap: 0.25rem;">
+            <span class="badge success" style="align-self: flex-start; margin-bottom: 0.25rem; font-size: 0.7rem; background: rgba(16, 185, 129, 0.15); color: var(--success); border-color: rgba(16, 185, 129, 0.25);">Naturaleza ⛰️</span>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); margin: 0;">Rutas Guiadas Parque Natural del Montgó</h3>
+            <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.8); text-shadow: 0 1px 2px rgba(0,0,0,0.5); margin: 0;">Disfruta de excursiones de senderismo inolvidables con guías expertos. Vistas panorámicas de toda la costa de Dénia.</p>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-header">
+        <h2 class="panel-title">Mis Reservas y Alquileres</h2>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID Reserva</th>
+                    <th>Vehículo</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>Estado Reserva</th>
+                    <th>Importe</th>
+                    <th>Estado de Pago</th>
+                    <th style="text-align: right;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in reservas %}
+                <!-- Row layout: (id_reserva, id_cliente, id_vehiculo, fecha_inicio, fecha_fin, fecha_reserva, estado_reserva, nombre_cliente, nombre_vehiculo, id_factura, estado_pago, importe_total) -->
+                <tr>
+                    <td><strong>#{{ r.0|floatformat:"0" }}</strong></td>
+                    <td style="font-weight: 600; color: var(--text-main);">{{ r.8 }}</td>
+                    <td>{{ r.3|date:"d/m/Y" }}</td>
+                    <td>{{ r.4|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if r.6 == 'ACTIVA' %}
+                            <span class="badge info">Activa</span>
+                        {% elif r.6 == 'FINALIZADA' %}
+                            <span class="badge success">Finalizada</span>
+                        {% else %}
+                            <span class="badge danger">Cancelada</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if r.9 %}
+                            <strong>{{ r.11 }} €</strong>
+                        {% else %}
+                            <span style="font-weight: 500; color: var(--text-muted);">{{ r.12 }} €</span>
+                            <span style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 0.15rem;">(Est.)</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if r.9 %}
+                            {% if r.10 == 'PAGADA' %}
+                                <span class="badge success">Pagada</span>
+                            {% elif r.10 == 'PENDIENTE' %}
+                                <span class="badge warning">Pendiente</span>
+                            {% else %}
+                                <span class="badge danger">Anulada</span>
+                            {% endif %}
+                        {% else %}
+                            {% if r.6 == 'CANCELADA' %}
+                                <span class="text-muted">—</span>
+                            {% else %}
+                                <span class="badge warning" style="background: rgba(251, 191, 36, 0.08); color: #eab308; border-color: rgba(251, 191, 36, 0.15); font-size: 0.7rem; padding: 0.1rem 0.4rem;">Presupuesto</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                            {% if r.9 and r.10 == 'PENDIENTE' and r.6 != 'CANCELADA' %}
+                                <a href="{% url 'client_pagar_factura' r.9 %}" class="btn btn-primary btn-xs" style="background: rgba(16, 185, 129, 0.2); border-color: var(--success); color: var(--success);" title="Pagar factura ahora">
+                                    💳 Pagar Factura
+                                </a>
+                            {% else %}
+                                <span class="text-muted" style="font-size: 0.8rem;">Sin acciones</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <p style="margin-bottom: 1rem;">Todavía no tienes reservas registradas en CostaDrive.</p>
+                        <a href="{% url 'client_crear_reserva' %}" class="btn btn-primary">¡Haz tu primera reserva ahora!</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slides = document.querySelectorAll('.promo-slide');
+        let currentSlide = 0;
+        
+        function nextSlide() {
+            if (slides.length > 1) {
+                slides[currentSlide].style.opacity = '0';
+                slides[currentSlide].style.zIndex = '0';
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].style.opacity = '1';
+                slides[currentSlide].style.zIndex = '1';
+            }
+        }
+        
+        if (slides.length > 1) {
+            setInterval(nextSlide, 5000); // Cambiar diapositiva cada 5 segundos
+        }
+    });
+</script>
+{% endblock %}

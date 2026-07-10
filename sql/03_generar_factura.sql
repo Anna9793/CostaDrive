@@ -4,8 +4,14 @@ CREATE OR REPLACE PROCEDURE GENERAR_FACTURA (
     v_precio_dia NUMBER;
     v_dias NUMBER;
     v_importe_total NUMBER;
+    v_existe NUMBER;
 
 BEGIN
+    -- Evitar duplicados
+    SELECT COUNT(*) INTO v_existe FROM FACTURAS WHERE ID_RESERVA = p_id_reserva;
+    IF v_existe > 0 THEN
+        RETURN;
+    END IF;
 
     SELECT(r.FECHA_FIN - r.FECHA_INICIO), v.precio_dia
     INTO v_dias, v_precio_dia

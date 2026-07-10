@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - CostaDrive</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem 0;
+            overflow-y: auto;
+        }
+        .signup-container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .signup-logo {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .signup-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+        }
+        .form-control {
+            background: rgba(15, 23, 42, 0.8) !important;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 480px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div>
+            <div class="signup-logo">🚗 CostaDrive</div>
+            <div class="signup-subtitle">Registrarse como Cliente de la Agencia</div>
+        </div>
+
+        <form method="post" style="display: flex; flex-direction: column; gap: 1.25rem;" novalidate>
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-error" style="font-size: 0.825rem; padding: 0.75rem 1rem;">
+                    ❌ {{ form.non_field_errors.0 }}
+                </div>
+            {% endif %}
+
+            <div class="grid-2">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="{{ form.nombre.id_for_label }}">{{ form.nombre.label }}</label>
+                    {{ form.nombre }}
+                    {% if form.nombre.errors %}
+                        <span style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ form.nombre.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="{{ form.apellidos.id_for_label }}">{{ form.apellidos.label }}</label>
+                    {{ form.apellidos }}
+                    {% if form.apellidos.errors %}
+                        <span style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ form.apellidos.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="{{ form.dni.id_for_label }}">{{ form.dni.label }}</label>
+                    {{ form.dni }}
+                    {% if form.dni.errors %}
+                        <span style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ form.dni.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="{{ form.telefono.id_for_label }}">{{ form.telefono.label }}</label>
+                    {{ form.telefono }}
+                    {% if form.telefono.errors %}
+                        <span style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ form.telefono.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <span style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ form.email.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <span style="color: var(--danger); font-size: 0.75rem; margin-top: 0.25rem; display: block;">{{ form.password.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="justify-content: center; padding: 0.75rem; font-size: 1rem; margin-top: 0.5rem;">
+                👤 Crear Cuenta y Entrar
+            </button>
+        </form>
+
+        <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+            ¿Ya tienes una cuenta? <a href="{% url 'login' %}" style="color: var(--primary); text-decoration: none; font-weight: 600;">Iniciar Sesión</a>
+        </div>
+    </div>
+</body>
+</html>

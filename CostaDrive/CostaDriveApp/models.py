@@ -16,7 +16,7 @@ class CategoriasVehiculo(models.Model):
 
 
 class Clientes(models.Model):
-    id_cliente = models.FloatField(primary_key=True)
+    id_cliente = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=50)
     apellidos = models.CharField(max_length=100)
     dni = models.CharField(unique=True, max_length=20)
@@ -31,7 +31,7 @@ class Clientes(models.Model):
 
 
 class Facturas(models.Model):
-    id_factura = models.FloatField(primary_key=True)
+    id_factura = models.AutoField(primary_key=True)
     id_reserva = models.OneToOneField('Reservas', models.DO_NOTHING, db_column='id_reserva')
     fecha_factura = models.DateField()
     importe_total = models.DecimalField(max_digits=10, decimal_places=2)
@@ -45,7 +45,7 @@ class Facturas(models.Model):
 
 
 class Incidencias(models.Model):
-    id_incidencia = models.FloatField(primary_key=True)
+    id_incidencia = models.AutoField(primary_key=True)
     id_reserva = models.ForeignKey('Reservas', models.DO_NOTHING, db_column='id_reserva')
     fecha_incidencia = models.DateField()
     descripcion = models.CharField(max_length=300)
@@ -61,7 +61,7 @@ class Incidencias(models.Model):
 
 
 class Mantenimientos(models.Model):
-    id_mantenimiento = models.FloatField(primary_key=True)
+    id_mantenimiento = models.AutoField(primary_key=True)
     id_vehiculo = models.ForeignKey('Vehiculos', models.DO_NOTHING, db_column='id_vehiculo')
     fecha_mantenimiento = models.DateField()
     descripcion = models.CharField(max_length=200)
@@ -75,7 +75,7 @@ class Mantenimientos(models.Model):
 
 
 class Pagos(models.Model):
-    id_pago = models.FloatField(primary_key=True)
+    id_pago = models.AutoField(primary_key=True)
     id_factura = models.ForeignKey(Facturas, models.DO_NOTHING, db_column='id_factura')
     fecha_pago = models.DateField()
     importe = models.DecimalField(max_digits=10, decimal_places=2)
@@ -88,7 +88,7 @@ class Pagos(models.Model):
         app_label = 'CostaDriveApp'
 
 class Reservas(models.Model):
-    id_reserva = models.FloatField(primary_key=True)
+    id_reserva = models.AutoField(primary_key=True)
     id_cliente = models.ForeignKey(Clientes, models.DO_NOTHING, db_column='id_cliente')
     id_vehiculo = models.ForeignKey('Vehiculos', models.DO_NOTHING, db_column='id_vehiculo')
     fecha_inicio = models.DateField()
